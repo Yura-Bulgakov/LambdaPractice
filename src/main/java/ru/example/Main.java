@@ -3,9 +3,9 @@ package ru.example;
 import java.util.Scanner;
 
 public class Main {
-    static Calculator calculator = new Calculator();
 
     public static void main(String[] args) {
+        Calculator calculator = new Calculator();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите выражение: ");
         String expression = scanner.nextLine();
