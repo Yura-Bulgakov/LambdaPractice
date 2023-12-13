@@ -16,28 +16,28 @@ public class LambdaOperation {
         return binaryOperation.apply(operand1, operand2);
     }
 
-    public void switchOperation(Character operator) {
+    public void switchOperation(String operator) {
         if (!ExpressionConvertor.isOperator(operator)){
             throw new IllegalArgumentException("Неизвестный оператор: " + operator);
         }
         switch (operator) {
-            case '+': {
+            case "+": {
                 binaryOperation = (x, y) ->  x + y;
                 break;
             }
-            case '-': {
+            case "-": {
                 binaryOperation = (x, y) -> x - y;
                 break;
             }
-            case '*': {
+            case "*": {
                 binaryOperation = (x, y) -> x * y;
                 break;
             }
-            case '/': {
+            case "/": {
                 binaryOperation = (x, y) -> x / y;
                 break;
             }
-            case '^': {
+            case "^": {
                 binaryOperation = Math::pow;
                 break;
             }
