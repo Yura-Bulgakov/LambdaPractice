@@ -17,9 +17,7 @@ public class LambdaOperation {
     }
 
     public void switchOperation(String operator) {
-        if (!ExpressionConvertor.isOperator(operator)){
-            throw new IllegalArgumentException("Неизвестный оператор: " + operator);
-        }
+
         switch (operator) {
             case "+": {
                 binaryOperation = (x, y) ->  x + y;
@@ -40,6 +38,9 @@ public class LambdaOperation {
             case "^": {
                 binaryOperation = Math::pow;
                 break;
+            }
+            default: {
+                throw new IllegalArgumentException("Неизвестный оператор: " + operator);
             }
         }
     }

@@ -17,50 +17,20 @@ public class ExpressionConvertor {
         for (var symbol: symbols) {
             if (isOperand(symbol)){
                 postfixExpression.append(symbol).append(" ");
-                unaryMinus = false; // встретился операнд
+                unaryMinus = false;
             } else if (symbol.equals("(")) {
-                if (unaryMinus && (operatorStack.peek() != null && operatorStack.peek().equals("-"))){
-                    // унарный минус перед скобкой
-                    postfixExpression.append("0 ");
-                }
-                operatorStack.push(symbol);
+                handleLeftBracket(operatorStack, postfixExpression, unaryMinus);
                 unaryMinus = true;
             } else if (symbol.equals(")")) {
-                while (!operatorStack.isEmpty() && !operatorStack.peek().equals("(")){
-                    postfixExpression.append(operatorStack.pop()).append(" ");
-                }
-                if (operatorStack.isEmpty()){
-                    throw new IllegalArgumentException("Внутри скобок отсутствуют операторы");
-                }
-                operatorStack.pop();
-                unaryMinus = false; // за закрывающей скобкой операнд
-            } else if (isOperator(symbol) && !symbol.equals("-")){
-                if (unaryMinus){
-                    // перед оператором унарный минус
-                    postfixExpression.append("0 ");
-                    unaryMinus = false;
-                }
-                while (!operatorStack.isEmpty() && priority(operatorStack.peek()) >= priority(symbol)){
-                    postfixExpression.append(operatorStack.pop()).append(" ");
-                }
-                operatorStack.push(symbol);
-            } else if (symbol.equals("-")) {
-                if (unaryMinus){
-                    postfixExpression.append("0 ");
-                    operatorStack.push(symbol);
-                    unaryMinus = false;
-                } else {
-                    while (!operatorStack.isEmpty() && priority(operatorStack.peek()) >= priority(symbol)) {
-                       postfixExpression.append(operatorStack.pop()).append(" ");
-                    }
-                    operatorStack.push(symbol);
-                    unaryMinus = true; // устанавлием флаг перед следующим символом
-                }
-            } else {
+                handleRightBracket(operatorStack,postfixExpression);
+                unaryMinus = false;
+            } else if (isOperator(symbol)) {
+                handleOperator(symbol,operatorStack,postfixExpression,unaryMinus);
+                unaryMinus = symbol.equals("-") && !unaryMinus;
+            }else {
                 throw new IllegalArgumentException("недопустимый символ: " + symbol);
             }
         }
-
         while (!operatorStack.isEmpty()){
             var operator = operatorStack.pop();
             if (operator.equals("(")){
@@ -102,5 +72,36 @@ public class ExpressionConvertor {
             symbols.add(matcher.group());
         }
         return symbols;
+    }
+
+    private void handleLeftBracket(Deque<String> operatorStack, StringBuilder postfixExpression, boolean unaryMinus){
+        if (unaryMinus && (operatorStack.peek() != null && operatorStack.peek().equals("-"))) {
+            postfixExpression.append("0 ");
+        }
+        operatorStack.push("(");
+    }
+
+    private void handleRightBracket(Deque<String> operatorStack, StringBuilder postfixExpression){
+        while (!operatorStack.isEmpty() && !operatorStack.peek().equals("(")) {
+            postfixExpression.append(operatorStack.pop()).append(" ");
+        }
+        if (operatorStack.isEmpty()) {
+            throw new IllegalArgumentException("Внутри скобок отсутствуют операторы");
+        }
+        operatorStack.pop();
+    }
+
+    private void handleOperator(String symbol, Deque<String> operatorStack,
+                                StringBuilder postfixExpression, boolean unaryMinus){
+        if (unaryMinus) {
+            postfixExpression.append("0 ");
+        }
+        if (!unaryMinus || !symbol.equals("-")){
+            while (!operatorStack.isEmpty() && priority(operatorStack.peek()) >= priority(symbol)) {
+                postfixExpression.append(operatorStack.pop()).append(" ");
+            }
+        }
+        operatorStack.push(symbol);
+
     }
 }
