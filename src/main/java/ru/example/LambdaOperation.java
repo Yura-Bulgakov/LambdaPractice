@@ -1,7 +1,6 @@
 package ru.example;
 
 import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
 
 
 public class LambdaOperation {
@@ -17,7 +16,6 @@ public class LambdaOperation {
     }
 
     public void switchOperation(String operator) {
-
         switch (operator) {
             case "+": {
                 binaryOperation = (x, y) ->  x + y;
