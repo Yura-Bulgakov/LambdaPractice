@@ -13,22 +13,21 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CalculatorTest {
-    private Calculator calculator;
-    private ExpressionConvertor mockConvertor;
-    private LambdaOperation spyOperation;
     private static final double DIFFER = 0.0000001;
+    private Calculator calculator;
+    private ExpressionConvertor spyConvertor;
+    private LambdaOperation spyOperation;
 
     @BeforeEach
     void setUp() {
-        mockConvertor = mock(ExpressionConvertor.class);
+        spyConvertor = spy(ExpressionConvertor.class);
         spyOperation = spy(LambdaOperation.class);
-        calculator = new Calculator(mockConvertor, spyOperation);
+        calculator = new Calculator(spyConvertor, spyOperation);
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/valid_expression_solve_data.csv", useHeadersInDisplayName = true)
-    void solveValidExpression(String testCase, String expression, String convertedExpression, double expectedResult) {
-        when(mockConvertor.convertToPostfix(expression)).thenReturn(convertedExpression);
+    @CsvFileSource(resources = "/test_data/calculator/valid_expression_solve_data.csv", useHeadersInDisplayName = true)
+    void solveValidExpression(String testCase, String expression, double expectedResult) {
         double got = calculator.solveExpression(expression);
         double delta = Math.abs(expectedResult - got);
         Assertions.assertTrue(delta < DIFFER,
@@ -37,7 +36,7 @@ class CalculatorTest {
 
     @Test
     void solveInvalidExpression() {
-        when(mockConvertor.convertToPostfix(anyString())).thenReturn("2 2");
+        when(spyConvertor.convertToPostfix(anyString())).thenReturn("2 2");
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             calculator.solveExpression("1324");
         });
@@ -45,7 +44,7 @@ class CalculatorTest {
 
     @Test
     void solveEmptyExpression() {
-        when(mockConvertor.convertToPostfix(anyString())).thenReturn("");
+        when(spyConvertor.convertToPostfix(anyString())).thenReturn("");
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             calculator.solveExpression("");
         });
