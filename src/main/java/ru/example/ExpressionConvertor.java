@@ -9,44 +9,44 @@ import java.util.regex.Pattern;
 
 public class ExpressionConvertor {
 
-    public String convertToPostfix(String infixExpression){
+    public static boolean isOperator(String symbol) {
+        return symbol.equals("+") || symbol.equals("-") || symbol.equals("*") || symbol.equals("/") || symbol.equals("^");
+    }
+
+    public static boolean isOperand(String symbol) {
+        return symbol.matches("\\d+(\\.\\d+)?");
+    }
+
+    public String convertToPostfix(String infixExpression) {
         var symbols = getSymbols(infixExpression);
         StringBuilder postfixExpression = new StringBuilder();
         Deque<String> operatorStack = new ArrayDeque<>();
         boolean unaryMinus = true;
-        for (var symbol: symbols) {
-            if (isOperand(symbol)){
+        for (var symbol : symbols) {
+            if (isOperand(symbol)) {
                 postfixExpression.append(symbol).append(" ");
                 unaryMinus = false;
             } else if (symbol.equals("(")) {
                 handleLeftBracket(operatorStack, postfixExpression, unaryMinus);
                 unaryMinus = true;
             } else if (symbol.equals(")")) {
-                handleRightBracket(operatorStack,postfixExpression);
+                handleRightBracket(operatorStack, postfixExpression);
                 unaryMinus = false;
             } else if (isOperator(symbol)) {
-                handleOperator(symbol,operatorStack,postfixExpression,unaryMinus);
+                handleOperator(symbol, operatorStack, postfixExpression, unaryMinus);
                 unaryMinus = symbol.equals("-") && !unaryMinus;
-            }else {
+            } else {
                 throw new IllegalArgumentException("недопустимый символ: " + symbol);
             }
         }
-        while (!operatorStack.isEmpty()){
+        while (!operatorStack.isEmpty()) {
             var operator = operatorStack.pop();
-            if (operator.equals("(")){
+            if (operator.equals("(")) {
                 throw new IllegalArgumentException("Отсутствует закрывающая скобка");
             }
             postfixExpression.append(operator).append(" ");
         }
         return postfixExpression.toString().trim();
-    }
-
-    public static boolean isOperator(String symbol){
-        return symbol.equals("+") || symbol.equals("-") || symbol.equals("*") || symbol.equals("/") || symbol.equals("^");
-    }
-
-    public static boolean isOperand(String symbol){
-        return symbol.matches("\\d+(\\.\\d+)?");
     }
 
     private int priority(String operator) {
@@ -64,7 +64,7 @@ public class ExpressionConvertor {
         }
     }
 
-    private List<String> getSymbols(String expression){
+    private List<String> getSymbols(String expression) {
         Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?|[\\-+*/()^]");
         Matcher matcher = pattern.matcher(expression);
         List<String> symbols = new ArrayList<>();
@@ -74,14 +74,14 @@ public class ExpressionConvertor {
         return symbols;
     }
 
-    private void handleLeftBracket(Deque<String> operatorStack, StringBuilder postfixExpression, boolean unaryMinus){
+    private void handleLeftBracket(Deque<String> operatorStack, StringBuilder postfixExpression, boolean unaryMinus) {
         if (unaryMinus && (operatorStack.peek() != null && operatorStack.peek().equals("-"))) {
             postfixExpression.append("0 ");
         }
         operatorStack.push("(");
     }
 
-    private void handleRightBracket(Deque<String> operatorStack, StringBuilder postfixExpression){
+    private void handleRightBracket(Deque<String> operatorStack, StringBuilder postfixExpression) {
         while (!operatorStack.isEmpty() && !operatorStack.peek().equals("(")) {
             postfixExpression.append(operatorStack.pop()).append(" ");
         }
@@ -92,11 +92,11 @@ public class ExpressionConvertor {
     }
 
     private void handleOperator(String symbol, Deque<String> operatorStack,
-                                StringBuilder postfixExpression, boolean unaryMinus){
+                                StringBuilder postfixExpression, boolean unaryMinus) {
         if (unaryMinus) {
             postfixExpression.append("0 ");
         }
-        if (!unaryMinus || !symbol.equals("-")){
+        if (!unaryMinus || !symbol.equals("-")) {
             while (!operatorStack.isEmpty() && priority(operatorStack.peek()) >= priority(symbol)) {
                 postfixExpression.append(operatorStack.pop()).append(" ");
             }

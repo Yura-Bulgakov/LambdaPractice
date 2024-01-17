@@ -7,16 +7,16 @@ public class Calculator {
     private ExpressionConvertor expressionConvertor;
     private LambdaOperation operation;
 
-    public Calculator() {
-        this.expressionConvertor = new ExpressionConvertor();
-        this.operation = new LambdaOperation();
+    public Calculator(ExpressionConvertor expressionConvertor, LambdaOperation lambdaOperation) {
+        this.expressionConvertor = expressionConvertor;
+        this.operation = lambdaOperation;
     }
 
-    public double solveExpression(String expression){
+    public double solveExpression(String expression) {
         String postfixExpression = expressionConvertor.convertToPostfix(expression);
         Deque<Double> operandStack = new ArrayDeque<>();
         String[] expressionElements = postfixExpression.split(" ");
-        for (var element:expressionElements) {
+        for (var element : expressionElements) {
             if (ExpressionConvertor.isOperator(element) && element.length() == 1) {
                 //Оператор
                 char operator = element.charAt(0);
@@ -29,7 +29,6 @@ public class Calculator {
                 operandStack.push(Double.parseDouble(element));
             }
         }
-
         if (operandStack.size() != 1) {
             throw new IllegalArgumentException("Некорректная запись, результатом должно быть одно число");
         }

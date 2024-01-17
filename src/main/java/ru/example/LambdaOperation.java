@@ -18,7 +18,7 @@ public class LambdaOperation {
     public void switchOperation(String operator) {
         switch (operator) {
             case "+": {
-                binaryOperation = (x, y) ->  x + y;
+                binaryOperation = (x, y) -> x + y;
                 break;
             }
             case "-": {

@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Calculator calculator = new Calculator();
+        Calculator calculator = new Calculator(new ExpressionConvertor(), new LambdaOperation());
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите выражение: ");
         String expression = scanner.nextLine();
